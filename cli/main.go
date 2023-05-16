@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,21 +15,37 @@ import (
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+
+	// Read the server address from the environment variable
+	serverAddress := os.Getenv("SERVER_ADDRESS")
+	if serverAddress == "" {
+		fmt.Println("SERVER_ADDRESS environment variable is not set.")
+		return
+	}
+
 	for {
 		fmt.Print("Enter ticker symbol (or 'exit' to quit): ")
-		ticker, _ := reader.ReadString('\n')
+		ticker, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break // Exit on EOF (Ctrl+D)
+			}
+			fmt.Printf("Failed to read input: %s\n", err)
+			continue
+		}
+
 		ticker = strings.TrimSpace(ticker)
 		//fmt.Printf("Ticker: '%s'\n", ticker) // debugging
 		if ticker == "exit" {
 			break
 		}
-		/*
-			if len(ticker) == 0 {
-				fmt.Println("Ticker symbol cannot be empty.")
-				continue
-			}
-		*/
-		resp, err := http.Get("http://localhost:8080/market-data/?ticker=" + ticker)
+
+		if ticker == "" {
+			fmt.Println("Ticker symbol cannot be empty.")
+			continue
+		}
+
+		resp, err := http.Get(serverAddress + "/market-data/?ticker=" + ticker)
 		if err != nil {
 			fmt.Printf("An error occurred: %s\n", err)
 			continue
