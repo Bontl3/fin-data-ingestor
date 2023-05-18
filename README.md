@@ -8,6 +8,7 @@ To install the Data Ingestion Microservice CLI application on your desktop, foll
 1. Clone the repository:
 
 `git clone https://github.com/your-username/data_ingestion_microservice.git`
+
 2. Navigate to the cli directory:
 
 `cd data_ingestion_microservice/cli`
@@ -20,8 +21,6 @@ To install the Data Ingestion Microservice CLI application on your desktop, foll
 
 * Linux/Mac:
 
-shell
-Copy code
 sudo mv data_ingestion_cli /usr/local/bin/
 Windows:
 
@@ -29,8 +28,7 @@ Add the data_ingestion_cli executable to a directory included in your system's P
 
 Verify the installation:
 
-shell
-Copy code
+
 data_ingestion_cli --version
 You should see the version information displayed if the installation was successful.
 
@@ -39,18 +37,15 @@ The Data Ingestion Microservice CLI application provides various commands and op
 
 To ingest market data from a CSV file:
 
-shell
-Copy code
+
 data_ingestion_cli ingest --file <path-to-csv-file>
 To fetch market data for a specific ticker:
 
-shell
-Copy code
+
 data_ingestion_cli fetch --ticker <ticker-symbol>
 For a complete list of commands and options, use the --help flag:
 
-shell
-Copy code
+
 data_ingestion_cli --help
 Configuration
 The Data Ingestion Microservice CLI application uses a configuration file (config.yml) to specify database connection details and other settings. Before running the application, make sure to update the configuration file with your own values.
