@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
+	"strconv"
 	"github.com/Bontl3/data_ingestion_microservice/internal/config"
 	"github.com/Bontl3/data_ingestion_microservice/internal/database"
 	"github.com/Bontl3/data_ingestion_microservice/internal/ingestion"
@@ -28,14 +28,27 @@ func NewMarketDataHandler(cfg *config.Config, db *database.Postgres) *MarketData
 // and writes the data as JSON to the response.
 func (h *MarketDataHandler) HandleMarketDataRequest(w http.ResponseWriter, r *http.Request) {
 	ticker := r.URL.Query().Get("ticker")
-
-	log.Printf("Tickers: '%s'\n", ticker) // for debugging
+	length := r.URL.Query().Get("length")
 
 	if ticker == "" {
 		http.Error(w, "Missing ticker parameter", http.StatusBadRequest)
 		return
 	}
 
+   // Set a default limit
+   limit := 50
+
+   // Override the limit if the length parameter is provided
+   if length != "" {
+	   var err error
+	   limit, err = strconv.Atoi(length)
+	   if err != nil {
+		   http.Error(w, "Invalid length parameter", http.StatusBadRequest)
+		   return
+	   }
+   }
+
+   
 	// Check if ticker data exists in the database
 	exists, err := h.db.TickerExists(ticker)
 
@@ -48,7 +61,7 @@ func (h *MarketDataHandler) HandleMarketDataRequest(w http.ResponseWriter, r *ht
 	var data []*models.MarketData
 	if exists {
 		// Fetch data from the database
-		data, err = h.db.FetchMarketData(ticker)
+		data, err = h.db.FetchMarketData(ticker, limit)
 		if err != nil {
 			http.Error(w, "Database error", http.StatusInternalServerError)
 			return

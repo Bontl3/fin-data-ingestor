@@ -1,0 +1,10 @@
+
+server:
+  port: 8080
+db:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: 0699
+  dbname: market_data_db
+  sslmode: disable

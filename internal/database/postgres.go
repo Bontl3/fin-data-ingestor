@@ -63,11 +63,11 @@ func (p *Postgres) StoreMarketData(data *models.MarketData) error {
 }
 
 // FetchMarketData fetches market data for a specific ticker from the database
-func (p *Postgres) FetchMarketData(ticker string) ([]*models.MarketData, error) {
-	// SQL statement to fetch data from the database
-	query := `SELECT ticker, date, open, high, low, close, volume FROM market_data WHERE ticker = $1 ORDER BY date DESC`
+func (p *Postgres) FetchMarketData(ticker string, limit int) ([]*models.MarketData, error) {
+    // SQL statement to fetch data from the database
+    query := `SELECT ticker, date, open, high, low, close, volume FROM market_data WHERE ticker = $1 ORDER BY date DESC LIMIT $2`
 
-	rows, err := p.db.Query(query, ticker)
+    rows, err := p.db.Query(query, ticker, limit)
 	if err != nil {
 		log.Printf("Error fecthing market data: %s", err)
 		return nil, err

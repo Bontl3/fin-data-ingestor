@@ -1,16 +1,11 @@
 package config
 
 import (
-	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"encoding/hex"
-	"errors"
-	"io"
 	"log"
 	"os"
-
+    "fmt"
+    "io/ioutil"
+    "strconv"
 	"gopkg.in/yaml.v3"
 )
 
@@ -36,98 +31,73 @@ type DatabaseConfig struct {
 	SSLMode  string `yaml:"sslmode"`
 }
 
-func Encrypt(plainData []byte, key string) ([]byte, error) {
-	block, err := aes.NewCipher([]byte(key))
-	if err != nil {
+// LoadConfig loads the configuration from the specified YAML file
+func LoadConfig(FilePath string)(*Config, error){
+	// read the contents of the config file
+	configData, err := ioutil.ReadFile(FilePath)
+	if err != nil{
 		return nil, err
 	}
 
-	iv := make([]byte, aes.BlockSize)
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return nil, err
-	}
+	// Create a new Config struct to hold parsed configuraion settings
+	config :=&Config{}
 
-	plainData = pad(plainData)
-
-	mode := cipher.NewCBCEncrypter(block, iv)
-	ciphertext := make([]byte, len(plainData))
-	mode.CryptBlocks(ciphertext, plainData)
-
-	ciphertext = append(iv, ciphertext...)
-
-	return []byte(hex.EncodeToString(ciphertext)), nil
-}
-
-func pad(data []byte) []byte {
-	padding := aes.BlockSize - len(data)%aes.BlockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(data, padtext...)
-}
-
-// LoadConfif, reads the config file and unmarshals it into a Config struct.
-// It takes a string aurgument confifPath representing the path to the configuration file.
-func LoadEncryptedConfig(configFile, key string) (*Config, error) {
-	// Read the contents of the config file
-	encryptedData, err := os.ReadFile(configFile)
-	if err != nil {
-		log.Printf("Checking if the error is here")
-		log.Fatalf("Failed to read config file: %s", err)
-	}
-
-	decryptedData, err := decrypt(encryptedData, key)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a new Config struct to hold the parsed configuration settings.
-	config := &Config{}
-	// Unmarshal the file contents (YAML) into the config struct.
-	err = yaml.Unmarshal(decryptedData, &config)
+	// Unmarshal the YAML daya into the config struct
+	err = yaml.Unmarshal(configData, &config)
 	if err != nil {
 		return nil, err
 	}
 	return config, nil
 }
 
-func decrypt(encrypted []byte, key string) ([]byte, error) {
-	ciphertext, _ := hex.DecodeString(string(encrypted))
 
-	block, err := aes.NewCipher([]byte(key))
-	if err != nil {
-		return nil, err
+// UpdateConfigWithEnv updates the configuration settings with environment variables.
+// It modifies the provided config struct in-place
+func UpdateConfigWithEnv(cfg *Config) error {
+	if cfg.Server.Port == "" {
+		cfg.Server.Port = os.Getenv("SERVER_PORT")
 	}
 
-	if len(ciphertext) < aes.BlockSize {
-		return nil, errors.New("ciphertext too short")
+	if cfg.DB.Host == "" {
+		cfg.DB.Host = os.Getenv("DB_HOST")
 	}
 
-	// The IV needs to be unique, but not secure. Therefore it's common to
-	// include it at the beginning of the ciphertext.
-	iv := ciphertext[:aes.BlockSize]
-	ciphertext = ciphertext[aes.BlockSize:]
-
-	mode := cipher.NewCBCDecrypter(block, iv)
-
-	// CryptBlocks can work in-place if the two arguments are the same.
-	mode.CryptBlocks(ciphertext, ciphertext)
-
-	// Unpad data after decryption.
-	ciphertext, err = unpad(ciphertext)
-	if err != nil {
-		return nil, err
+	if cfg.DB.Port == 0 {
+		portStr := os.Getenv("DB_PORT")
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			return fmt.Errorf("failed to parse DB_PORT: %w", err)
+		}
+		cfg.DB.Port = port
 	}
 
-	return ciphertext, nil
+	if cfg.DB.User == "" {
+		cfg.DB.User = os.Getenv("DB_USER")
+	}
+
+	if cfg.DB.Password == "" {
+		cfg.DB.Password = os.Getenv("DB_PASSWORD")
+	}
+
+	if cfg.DB.DBName == "" {
+		cfg.DB.DBName = os.Getenv("DB_NAME")
+	}
+
+	if cfg.DB.SSLMode == "" {
+		cfg.DB.SSLMode = os.Getenv("DB_SSL_MODE")
+	}
+
+	// Update other configuration values from environment variables
+
+	return nil
 }
 
-// unpad removes padding from data that was added as per PKCS#7 standard.
-func unpad(data []byte) ([]byte, error) {
-	length := len(data)
-	unpadding := int(data[length-1])
-
-	if unpadding > length {
-		return nil, errors.New("unpad error. This could happen when wrong encryption key is used")
+// parseInt parses the string representation of an integer and returns the corresponding integer value.
+// It returns an error if the parsing fails.
+func parseInt(s string) int {
+	value, err := strconv.Atoi(s)
+	if err != nil {
+		log.Printf("Failed to parse integer: %v", err)
 	}
-
-	return data[:(length - unpadding)], nil
+	return value
 }
