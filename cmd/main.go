@@ -1,18 +1,18 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
-	"context"
-	"net/http"
 	"time"
 
 	"github.com/Bontl3/data_ingestion_microservice/internal/config"
 	"github.com/Bontl3/data_ingestion_microservice/internal/database"
-	"github.com/Bontl3/data_ingestion_microservice/pkg/http"
+	pkg "github.com/Bontl3/data_ingestion_microservice/pkg/http"
 )
 
 func main() {
@@ -32,17 +32,14 @@ func main() {
 		log.Fatalf("Failed to update configuration with environment variables: %s", err)
 	}
 
-
 	// Set up the database connection
 	db, err := database.NewDBConn(&cfg.DB)
 	if err != nil {
 		log.Fatalf("Failed to establish database connection: %s", err)
 	}
 
-
 	// Create an instance of the HTTP server
 	server := pkg.NewServer(cfg, db)
-
 
 	// Start the HTTP server in a separate goroutine
 	go func() {
@@ -56,7 +53,7 @@ func main() {
 	// Create a channel to listen for OS signals
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
-	
+
 	<-stopChan // Wait for OS signal
 
 	// Create a context for graceful shutdown
