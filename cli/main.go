@@ -2,19 +2,20 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
-	"log"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
-	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"flag"
-    "github.com/Gonum/stat"
+
+	"github.com/Gonum/stat"
 
 	"github.com/Bontl3/data_ingestion_microservice/internal/models"
 )
@@ -43,12 +44,11 @@ type ConfigTemplate struct {
 }
 
 // Function to get user input
-func getUserInput(prompt string, reader *bufio.Reader) (string, error){
+func getUserInput(prompt string, reader *bufio.Reader) (string, error) {
 	fmt.Print(prompt)
 	input, err := reader.ReadString('\n')
 	return strings.TrimSpace(input), err
 }
-
 
 // Function to generate config file
 func generateConfigFile(data ConfigTemplate) error {
@@ -93,7 +93,7 @@ func generateConfigFile(data ConfigTemplate) error {
 }
 
 // Function to run the server
-func runServer(rootDir string) error{
+func runServer(rootDir string) error {
 	cmdPath := filepath.Join(rootDir, "cmd", "main.go")
 	// Execute the cmd/main.go using the `go run` command
 	cmd := exec.Command("cmd.exe", "/c", "start", "cmd", "/k", "go", "run", cmdPath)
@@ -126,40 +126,39 @@ func getTickerSymbol(reader *bufio.Reader) (string, error) {
 	return ticker, nil
 }
 
-
 // Function to handle the ticker symbol entered by the user
 func handleTickerSymbol(reader *bufio.Reader, serverAddress string, ticker string, stats bool) {
 	for {
-        // If ticker symbol is specified in command line flags, use it
-        // Otherwise, ask the user for the ticker symbol
-        var err error
+		// If ticker symbol is specified in command line flags, use it
+		// Otherwise, ask the user for the ticker symbol
+		var err error
 		if ticker == "" {
-            ticker, err = getTickerSymbol(reader)
-            if err != nil {
-                if err == io.EOF {
-                    break
-                }
-                fmt.Println(err)
-                continue
-            }
-        }
+			ticker, err = getTickerSymbol(reader)
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				fmt.Println(err)
+				continue
+			}
+		}
 
-        if ticker == "exit" {
-            break
-        }
+		if ticker == "exit" {
+			break
+		}
 
-        // Ask the user for the desired data length
-        length, err := getUserInput("Enter desired data length (leave empty for default): ", reader)
-        if err != nil {
-            fmt.Printf("Failed to read input for length: %v\n", err)
-            continue
-        }
+		// Ask the user for the desired data length
+		length, err := getUserInput("Enter desired data length (leave empty for default): ", reader)
+		if err != nil {
+			fmt.Printf("Failed to read input for length: %v\n", err)
+			continue
+		}
 
-        // Construct the request URL
-        requestURL := serverAddress + "/market-data/?ticker=" + ticker
-        if length != "" {
-            requestURL += "&length=" + length
-        }	
+		// Construct the request URL
+		requestURL := serverAddress + "/market-data/?ticker=" + ticker
+		if length != "" {
+			requestURL += "&length=" + length
+		}
 
 		resp, err := http.Get(requestURL)
 		if err != nil {
@@ -191,100 +190,114 @@ func handleTickerSymbol(reader *bufio.Reader, serverAddress string, ticker strin
 			continue
 		}
 
-        for _, item := range data {
-            fmt.Printf("Date: %s, Close: %f\n", item.Date, item.Close)
-        }
+		for _, item := range data {
+			fmt.Printf("Date: %s, Close: %f\n", item.Date, item.Close)
+		}
 
 		if stats {
-            calculateStats(data)
-        } else {
-            for _, item := range data {
-                fmt.Printf("Date: %s, Close: %f\n", item.Date, item.Close)
-            }
-        }
+			calculateStats(data)
+		} else {
+			for _, item := range data {
+				fmt.Printf("Date: %s, Close: %f\n", item.Date, item.Close)
+			}
+		}
 
-        // If ticker symbol is specified in command line flags, break the loop
-        // after handling it once
-        if ticker != "" {
-            break
-        }
-    }
+		// If ticker symbol is specified in command line flags, break the loop
+		// after handling it once
+		if ticker != "" {
+			break
+		}
+	}
 }
 
-
-
 func calculateStats(data []models.MarketData) {
-    // Create a slice to hold the closing prices
-    closes := make([]float64, len(data))
+	// Create a slice to hold the closing prices
+	closes := make([]float64, len(data))
 
-    // Populate the slice with closing prices
-    for i, item := range data {
-        closes[i] = item.Close
-    }
+	// Populate the slice with closing prices
+	for i, item := range data {
+		closes[i] = item.Close
+	}
 
-    // Calculate and print the mean and standard deviation of the closing prices
-    mean := stat.Mean(closes, nil)
-    stdDev := stat.StdDev(closes, nil)
+	// Calculate and print the mean and standard deviation of the closing prices
+	mean := stat.Mean(closes, nil)
+	stdDev := stat.StdDev(closes, nil)
 
-    fmt.Printf("Mean: %f\n", mean)
-    fmt.Printf("Standard Deviation: %f\n", stdDev)
+	fmt.Printf("Mean: %f\n", mean)
+	fmt.Printf("Standard Deviation: %f\n", stdDev)
 }
 
 func main() {
-    // Define and parse command line flags
-    tickerPtr := flag.String("ticker", "", "Ticker symbol")
-    statsPtr := flag.Bool("stats", false, "Calculate descriptive statistics")
-    
+	// Define and parse command line flags
+	tickerPtr := flag.String("ticker", "", "Ticker symbol")
+	statsPtr := flag.Bool("stats", false, "Calculate descriptive statistics")
+
 	// Override the default usage function to provide a custom help message
-    flag.Usage = func() {
-        fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-        fmt.Fprintln(os.Stderr, "This is a CLI application for fetching market data.")
-        fmt.Fprintln(os.Stderr, "You can specify the ticker symbol and whether to calculate statistics using command line flags.")
-        fmt.Fprintln(os.Stderr, "For example, to get the market data for the AAPL ticker and calculate statistics, run:  -ticker=AAPL -stats")
-        fmt.Fprintln(os.Stderr, "Flags:")
-        flag.PrintDefaults()
-    }
-	
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintln(os.Stderr, "This is a CLI application for fetching market data.")
+		fmt.Fprintln(os.Stderr, "You can specify the ticker symbol and whether to calculate statistics using command line flags.")
+		fmt.Fprintln(os.Stderr, "For example, to get the market data for the AAPL ticker and calculate statistics, run:  -ticker=AAPL -stats")
+		fmt.Fprintln(os.Stderr, "Flags:")
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 
 	// Create a new reader for user input
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Println("Welcome to Data Ingestion Microservice Setup")
-	fmt.Println("Please provide the following information to generate the config file:")
 
-	
-	// Ask the user for input top generatye the config file
-	dbHost, err := getUserInput("Enter Database Host: ", reader)
-	dbPort, err := getUserInput("Enter Database Port: ", reader)
-	dbUser, err := getUserInput("Enter Database User ", reader)
-	dbPassword, err := getUserInput("Enter Database Password: ", reader)
-	dbName, err := getUserInput("Enter Database Name: ", reader)
-	dbSSLMode, err := getUserInput("Enter Database SSL Mode (disable, require, verify-ca, verify-full): ", reader)
-
-	// Create a data structure to hold the template variables
-	data := ConfigTemplate{
-		DBHost:     dbHost,
-		DBPort:     dbPort,
-		DBUser:     dbUser,
-		DBPassword: dbPassword,
-		DBName:     dbName,
-		DBSSLMode:  dbSSLMode,
-	}
-
-	// Generate the config file
-	err = generateConfigFile(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Get the root directory. This will ne ised in runServer
+	// get the root directory
 	currentDir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Construct path to the root directory
 	rootDir := filepath.Join(currentDir, "..")
-	// Run the server
+	// Set the path to the cmd directory
+	cmdDirPath := filepath.Join(rootDir, "cmd")
+	// Create the config file in the cmd directory
+	configFilePath := filepath.Join(cmdDirPath, "config.yml")
+
+	// Check if config file already exists
+	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+		fmt.Println("Configuration file not found. Please provide the following information to generate the config file:")
+
+		// Existing code for getting user input and generating the config file...
+
+		fmt.Println("Please provide the following information to generate the config file:")
+
+		// Ask the user for input top generatye the config file
+		dbHost, err := getUserInput("Enter Database Host: ", reader)
+		dbPort, err := getUserInput("Enter Database Port: ", reader)
+		dbUser, err := getUserInput("Enter Database User ", reader)
+		dbPassword, err := getUserInput("Enter Database Password: ", reader)
+		dbName, err := getUserInput("Enter Database Name: ", reader)
+		dbSSLMode, err := getUserInput("Enter Database SSL Mode (disable, require, verify-ca, verify-full): ", reader)
+
+		// Create a data structure to hold the template variables
+		data := ConfigTemplate{
+			DBHost:     dbHost,
+			DBPort:     dbPort,
+			DBUser:     dbUser,
+			DBPassword: dbPassword,
+			DBName:     dbName,
+			DBSSLMode:  dbSSLMode,
+		}
+
+		// Generate the config file
+		err = generateConfigFile(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if err != nil {
+		// If an error occurred for a reason other than the file not existing, log and exit
+		log.Fatalf("An error occurred while checking for the configuration file: %v", err)
+	}
+
 	err = runServer(rootDir)
 	if err != nil {
 		log.Fatal(err)
@@ -296,11 +309,10 @@ func main() {
 		fmt.Println("SERVER_ADDRESS environment variable is not set.")
 		return
 	}
-    // Handle ticker symbol based on command line flags
-    if *tickerPtr != "" {
-        handleTickerSymbol(reader, serverAddress, *tickerPtr, *statsPtr)
-    } else {
-        handleTickerSymbol(reader, serverAddress, "", false)
-    }
+	// Handle ticker symbol based on command line flags
+	if *tickerPtr != "" {
+		handleTickerSymbol(reader, serverAddress, *tickerPtr, *statsPtr)
+	} else {
+		handleTickerSymbol(reader, serverAddress, "", false)
+	}
 }
-
