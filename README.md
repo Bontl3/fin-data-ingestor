@@ -17,8 +17,8 @@ Follow these steps to run the application:
 
 2. Once downloaded, navigate to the directory containing the binary file using your system's command line interface.
 3. Start the application by running:
-3.1 `./data_ingestion_microservice` on Unix systems or 
-3.2  `data_ingestion_microservice.exe` on Windows systems.
+* `./data_ingestion_microservice` on Unix systems or 
+*  `data_ingestion_microservice.exe` on Windows systems.
 4. If the configuration file config.yml does not exist in the same directory, the application will ask for database configuration details. These details are necessary for the application to fetch market data.
 5. After providing the database configuration details, the application will create a config.yml file in the same directory for future use. Next time you run the application, it will use the details from this file and will not ask for them again.
 6. The application will then prompt you to enter a ticker symbol. Type in a valid ticker symbol and press Enter.
@@ -29,4 +29,4 @@ Follow these steps to run the application:
 
 The application accepts two optional command line flags for advanced usage:
 
-* ``
+* `-ticker=<TICKER_SYMBOL>`
