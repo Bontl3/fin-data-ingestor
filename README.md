@@ -17,33 +17,16 @@ Follow these steps to run the application:
 
 2. Once downloaded, navigate to the directory containing the binary file using your system's command line interface.
 3. Start the application by running:
-4.  `./data_ingestion_microservice` on Unix systems or 
-5.  `data_ingestion_microservice.exe` on Windows systems.
-If the configuration file config.yml does not exist in the same directory, the application will ask for database configuration details. These details are necessary for the application to fetch market data.
-After providing the database configuration details, the application will create a config.yml file in the same directory for future use. Next time you run the application, it will use the details from this file and will not ask for them again.
-The application will then prompt you to enter a ticker symbol. Type in a valid ticker symbol and press Enter.
-Optionally, you can specify a data length. If you don't want to specify a length, simply press Enter to use the default value.
-The application will fetch and display the market data for the specified ticker symbol.
-The application has been compiled into a binary executable for ease of use, and does not require the Go language to be installed on your machine.
+3.1 `./data_ingestion_microservice` on Unix systems or 
+3.2  `data_ingestion_microservice.exe` on Windows systems.
+4. If the configuration file config.yml does not exist in the same directory, the application will ask for database configuration details. These details are necessary for the application to fetch market data.
+5. After providing the database configuration details, the application will create a config.yml file in the same directory for future use. Next time you run the application, it will use the details from this file and will not ask for them again.
+6. The application will then prompt you to enter a ticker symbol. Type in a valid ticker symbol and press Enter.
+7. Optionally, you can specify a data length. If you don't want to specify a length, simply press Enter to use the default value.
+8. The application will fetch and display the market data for the specified ticker symbol.
 
-Follow these steps to run the application:
+## Advanced Usage
 
-Download the latest binary executable from the GitHub releases page.
-Once downloaded, navigate to the directory containing the binary file using your system's command line interface.
-Start the application by running ./data_ingestion_microservice on Unix systems or data_ingestion_microservice.exe on Windows systems.
-If the configuration file config.yml does not exist in the same directory, the application will ask for database configuration details. These details are necessary for the application to fetch market data.
-After providing the database configuration details, the application will create a config.yml file in the same directory for future use. Next time you run the application, it will use the details from this file and will not ask for them again.
-The application will then prompt you to enter a ticker symbol. Type in a valid ticker symbol and press Enter.
-Optionally, you can specify a data length. If you don't want to specify a length, simply press Enter to use the default value.
-The application will fetch and display the market data for the specified ticker symbol.
-Here's an overview of the application's functionality:
+The application accepts two optional command line flags for advanced usage:
 
-Configuration: The application loads its configuration from a YAML file. The configuration includes settings for the server (such as the port to listen on) and the database connection.
-
-Database Connection: The application establishes a connection to a PostgreSQL database using the provided configuration settings. It sets connection pool parameters to optimize performance.
-
-Database Migration: The application ensures the database schema is up to date by running database migrations. Migrations allow for the creation and modification of database tables and schema over time.
-
-Data Ingestion: The application fetches market data for a specific ticker symbol from an external API. It makes HTTP requests to retrieve the data and stores it in the PostgreSQL database. The fetched data includes information such as the ticker symbol, date, open price, high price, low price, closing price, and volume.
-
-CLI Interaction: The application provides a command-line interface (CLI) for users to interact with. Users can enter a ticker symbol and retrieve the corresponding market data from the database. 
+* ``
