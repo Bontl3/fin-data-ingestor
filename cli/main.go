@@ -228,22 +228,6 @@ func calculateStats(data []models.MarketData) {
 }
 
 func main() {
-	// Define and parse command line flags
-	tickerPtr := flag.String("ticker", "", "Ticker symbol")
-	statsPtr := flag.Bool("stats", false, "Calculate descriptive statistics")
-
-	// Override the default usage function to provide a custom help message
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-		fmt.Fprintln(os.Stderr, "This is a CLI application for fetching market data.")
-		fmt.Fprintln(os.Stderr, "You can specify the ticker symbol and whether to calculate statistics using command line flags.")
-		fmt.Fprintln(os.Stderr, "For example, to get the market data for the AAPL ticker and calculate statistics, run:  -ticker=AAPL -stats")
-		fmt.Fprintln(os.Stderr, "Flags:")
-		flag.PrintDefaults()
-	}
-
-	flag.Parse()
-
 	// Create a new reader for user input
 	reader := bufio.NewReader(os.Stdin)
 
@@ -308,11 +292,45 @@ func main() {
 	if serverAddress == "" {
 		fmt.Println("SERVER_ADDRESS environment variable is not set.")
 		return
-	}
-	// Handle ticker symbol based on command line flags
-	if *tickerPtr != "" {
-		handleTickerSymbol(reader, serverAddress, *tickerPtr, *statsPtr)
-	} else {
-		handleTickerSymbol(reader, serverAddress, "", false)
+		// Define command line flags
+		var ticker string
+		var stats bool
+		flag.StringVar(&ticker, "ticker", "", "Ticker symbol")
+		flag.BoolVar(&stats, "stats", false, "Calculate descriptive statistics")
+		flag.Parse()
+
+		// Show available commands
+		fmt.Println("Available commands:")
+		fmt.Println("-ticker <TICKER_SYMBOL>: Fetch market data for a ticker symbol")
+		fmt.Println("-stats <TICKER_SYMBOL>: Fetch market data and calculate statistics for a ticker symbol")
+		fmt.Println("-home: Display all available tickers")
+		fmt.Println("-exit: Exit the application")
+		fmt.Println("Enter the command:")
+		reader = bufio.NewReader(os.Stdin)
+		for {
+			command, _ := reader.ReadString('\n')
+			command = strings.TrimSpace(command)
+			switch {
+			case strings.HasPrefix(command, "-ticker"):
+				ticker = strings.TrimPrefix(command, "-ticker ")
+				ticker = strings.TrimSpace(ticker)
+				if ticker != "" {
+					handleTickerSymbol(reader, serverAddress, ticker, false)
+				}
+			case strings.HasPrefix(command, "-stats"):
+				ticker = strings.TrimPrefix(command, "-stats ")
+				ticker = strings.TrimSpace(ticker)
+				if ticker != "" {
+					handleTickerSymbol(reader, serverAddress, ticker, true)
+				}
+			case command == "-home":
+				// Add your implementation here
+			case command == "-exit":
+				fmt.Println("Exiting the application. Goodbye!")
+				os.Exit(0)
+			default:
+				fmt.Println("Invalid command. Please try again.")
+			}
+		}
 	}
 }
