@@ -1,7 +1,7 @@
 # Data Ingestion Microservice Application
 
 # Status: App Being Updated
-Application is being updated. Please come back anytime after 13:00 pm 20 May 2023 to use or review the code. In the meantime you are more than welcome to browse around :) 
+Application is being updated. Please come back anytime after 8 am CAT 22 May 2023 to use or review the code. In the meantime you are more than welcome to browse around :) 
 
 Again please note, this is an old version and might not work on your machince. 
 
