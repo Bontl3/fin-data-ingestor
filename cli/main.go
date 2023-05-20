@@ -292,45 +292,50 @@ func main() {
 	if serverAddress == "" {
 		fmt.Println("SERVER_ADDRESS environment variable is not set.")
 		return
-		// Define command line flags
-		var ticker string
-		var stats bool
-		flag.StringVar(&ticker, "ticker", "", "Ticker symbol")
-		flag.BoolVar(&stats, "stats", false, "Calculate descriptive statistics")
-		flag.Parse()
+	}
+	// Define command line flags
+	var ticker string
+	var stats bool
+	flag.StringVar(&ticker, "ticker", "", "Ticker symbol")
+	flag.BoolVar(&stats, "stats", false, "Calculate descriptive statistics")
+	flag.Parse()
 
-		// Show available commands
-		fmt.Println("Available commands:")
-		fmt.Println("-ticker <TICKER_SYMBOL>: Fetch market data for a ticker symbol")
-		fmt.Println("-stats <TICKER_SYMBOL>: Fetch market data and calculate statistics for a ticker symbol")
-		fmt.Println("-home: Display all available tickers")
-		fmt.Println("-exit: Exit the application")
-		fmt.Println("Enter the command:")
-		reader = bufio.NewReader(os.Stdin)
-		for {
-			command, _ := reader.ReadString('\n')
-			command = strings.TrimSpace(command)
-			switch {
-			case strings.HasPrefix(command, "-ticker"):
-				ticker = strings.TrimPrefix(command, "-ticker ")
-				ticker = strings.TrimSpace(ticker)
-				if ticker != "" {
-					handleTickerSymbol(reader, serverAddress, ticker, false)
-				}
-			case strings.HasPrefix(command, "-stats"):
-				ticker = strings.TrimPrefix(command, "-stats ")
-				ticker = strings.TrimSpace(ticker)
-				if ticker != "" {
-					handleTickerSymbol(reader, serverAddress, ticker, true)
-				}
-			case command == "-home":
-				// Add your implementation here
-			case command == "-exit":
-				fmt.Println("Exiting the application. Goodbye!")
-				os.Exit(0)
-			default:
-				fmt.Println("Invalid command. Please try again.")
+	// Show available commands
+	fmt.Println("Available commands:")
+	fmt.Println("-ticker <TICKER_SYMBOL>: Fetch market data for a ticker symbol")
+	fmt.Println("-stats <TICKER_SYMBOL>: Fetch market data and calculate statistics for a ticker symbol")
+	fmt.Println("-home: Display all available tickers")
+	fmt.Println("-exit: Exit the application")
+	fmt.Println("Enter the command:")
+	reader = bufio.NewReader(os.Stdin)
+	for {
+		command, _ := reader.ReadString('\n')
+		command = strings.TrimSpace(command)
+		switch {
+		case strings.HasPrefix(command, "-ticker"):
+			ticker = strings.TrimPrefix(command, "-ticker ")
+			ticker = strings.TrimSpace(ticker)
+			if ticker != "" {
+				handleTickerSymbol(reader, serverAddress, ticker, false)
 			}
+		case strings.HasPrefix(command, "-stats"):
+			ticker = strings.TrimPrefix(command, "-stats ")
+			ticker = strings.TrimSpace(ticker)
+			if ticker != "" {
+				handleTickerSymbol(reader, serverAddress, ticker, true)
+			}
+		case command == "-home":
+			fmt.Println("Welcome to the Data Ingestion Microservice!")
+			fmt.Println("Available commands:")
+			fmt.Println("-ticker <symbol>: Get market data for a specific ticker")
+			fmt.Println("-stats <symbol>: Get statistics for a specific ticker")
+			fmt.Println("-exit: Exit the program")
+			fmt.Println()
+		case command == "-exit":
+			fmt.Println("Exiting the application. Goodbye!")
+			os.Exit(0)
+		default:
+			fmt.Println("Invalid command. Please try again.")
 		}
 	}
 }
