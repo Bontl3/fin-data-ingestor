@@ -38,6 +38,12 @@ Before you begin, ensure you have met the following requirements:
 
 `-home`: Displays the home screen with basic instructions.
 
+`-ticker <ticker symbol>`: Queries and displays the financial data related to the specified ticker symbol. Please replace `<ticker symbol>` with the actual ticker you are interested in (e.g., `AAPL` for Apple Inc.).
+
+`-stats`: Displays statistics about the currently ingested and stored financial data.
+
+`-exit`: Safely shuts down the application.
+
 ## Support
 
 If you encounter any problems or have questions, please create an issue on the GitHub repository: [https://github.com/Bontl3/fin-data-ingestor/issues](https://github.com/Bontl3/fin-data-ingestor/issues)
