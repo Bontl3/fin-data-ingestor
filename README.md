@@ -5,28 +5,50 @@ Application is being updated. Please come back anytime after 8 am CAT 22 May 202
 
 Again please note, this is an old version and might not work on your machince. 
 
-## Introduction
+# Data Ingestion Microservice
 
-This is a Command-Line Interface (CLI) application for fetching market data. It is written in Go and allows users to fetch market data for a specified ticker symbol. Optionally, the application can calculate descriptive statistics (mean and standard deviation) for the closing prices of the requested market data.
+## Overview
 
-## The application has been compiled into a binary executable for ease of use, and does not require the Go language to be installed on your machine.
+The Data Ingestion Microservice is a command-line interface (CLI) application written in Go. This application allows you to ingest financial data and store it in a PostgreSQL database.
 
-Follow these steps to run the application:
+## Prerequisites
 
-1. Download the latest binary executable from the GitHub releases page.
+Before you begin, ensure you have met the following requirements:
 
-2. Once downloaded, navigate to the directory containing the binary file using your system's command line interface.
-3. Start the application by running:
-* `./data_ingestion_microservice` on Unix systems or 
-*  `data_ingestion_microservice.exe` on Windows systems.
-4. If the configuration file config.yml does not exist in the same directory, the application will ask for database configuration details. These details are necessary for the application to fetch market data.
-5. After providing the database configuration details, the application will create a config.yml file in the same directory for future use. Next time you run the application, it will use the details from this file and will not ask for them again.
-6. The application will then prompt you to enter a ticker symbol. Type in a valid ticker symbol and press Enter.
-7. Optionally, you can specify a data length. If you don't want to specify a length, simply press Enter to use the default value.
-8. The application will fetch and display the market data for the specified ticker symbol.
+* You have a computer system with a recent version of Windows, MacOS, or Linux installed.
+* You have PostgreSQL installed and properly configured. 
 
-## Advanced Usage
+**Important**: This application requires a PostgreSQL database to function correctly. The application will prompt you for your database credentials to generate a configuration file. If you don't have PostgreSQL installed, you can download it from the official website: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
 
-The application accepts two optional command line flags for advanced usage:
+## How to Install the Application
 
-* `-ticker=<TICKER_SYMBOL>`
+1. Go to the repository page on GitHub: [https://github.com/Bontl3/fin-data-ingestor](https://github.com/Bontl3/fin-data-ingestor)
+2. Click on the "Releases" tab.
+3. Download the latest release for your operating system.
+4. Extract the downloaded file to your desired location.
+
+## How to Use the Application
+
+1. Open a terminal or command prompt.
+2. Navigate to the location where you extracted the downloaded file.
+3. Run the application using the command: `./data_ingestion_cli_app`
+4. Follow the prompts to input your PostgreSQL database credentials and other details as requested by the application.
+
+## Commands
+
+`-home`: Displays the home screen with basic instructions.
+
+`-ticker <ticker symbol>`: Queries and displays the financial data related to the specified ticker symbol. Please replace `<ticker symbol>` with the actual ticker you are interested in (e.g., `AAPL` for Apple Inc.).
+
+`-stats`: Displays statistics about the currently ingested and stored financial data.
+
+`-exit`: Safely shuts down the application.
+
+## Support
+
+If you encounter any problems or have questions, please create an issue on the GitHub repository: [https://github.com/Bontl3/fin-data-ingestor/issues](https://github.com/Bontl3/fin-data-ingestor/issues)
+
+## License
+
+This project is licensed under the terms of the MIT license.
+
