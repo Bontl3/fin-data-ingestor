@@ -15,7 +15,8 @@ The Data Ingestion Microservice is a command-line interface (CLI) application wr
 
 Before you begin, ensure you have met the following requirements:
 
-* You have a computer system with a recent version of Windows, MacOS, or Linux installed.
+* You have a computer system with a recent version of Windows.
+* Please note that the application currently supports Windows only. Compatibility with MacOS and Linux will be added in due course
 * You have PostgreSQL installed and properly configured. 
 
 **Important**: This application requires a PostgreSQL database to function correctly. The application will prompt you for your database credentials to generate a configuration file. If you don't have PostgreSQL installed, you can download it from the official website: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
