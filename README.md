@@ -40,7 +40,7 @@ Before you begin, ensure you have met the following requirements:
 
 `-ticker <ticker symbol>`: Queries and displays the financial data related to the specified ticker symbol. Please replace `<ticker symbol>` with the actual ticker you are interested in (e.g., `AAPL` for Apple Inc.).
 
-`-stats`: Displays statistics about the currently ingested and stored financial data.
+`-stats <ticker symbol>`: Displays descriptive statistics about the ticker you have just entered.
 
 `-exit`: Safely shuts down the application.
 
