@@ -27,12 +27,12 @@ Here is a simple guide on how to set up a PostgreSQL database:
 1. Install PostgreSQL from
 2. Once installed, create a new database which will be used by the application. This can be done by using the PostgreSQL command line interface (psql) or a graphical interface such as PgAdmin.
 3. Ensure that you have the following database details:
- * Database Host (e.g., localhost if running on your machine)
-  * Database Port (typically 5432 for PostgreSQL)
-  * Database User
-  * Database Password
-  * Database Name
-  * SSL Mode (Set to 'disable' for local setup)
+   * Database Host (e.g., localhost if running on your machine)
+   * Database Port (typically 5432 for PostgreSQL)
+   * Database User
+   * Database Password
+   * Database Name
+   * SSL Mode (Set to 'disable' for local setup)
 
 ## How to Install the Application
 
@@ -45,7 +45,7 @@ Here is a simple guide on how to set up a PostgreSQL database:
 
 1. Open a terminal or command prompt.
 2. Navigate to the location where you extracted the downloaded file.
-3. Run the application using the command: `./data_ingestion_cli_app`
+3. Run the application using the command: `data_ingestion_cli_app`
 4. Follow the prompts to input your PostgreSQL database credentials and other details as requested by the application.
 
 ## Commands
