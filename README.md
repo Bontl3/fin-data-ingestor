@@ -1,12 +1,5 @@
 # Data Ingestion Microservice Application
 
-# Status: App Being Updated
-Application is being updated. Please come back anytime after 8 am CAT 22 May 2023 to use or review the code. In the meantime you are more than welcome to browse around :) 
-
-Again please note, this is an old version and might not work on your machince. 
-
-# Data Ingestion Microservice
-
 ## Overview
 
 The Data Ingestion Microservice is a command-line interface (CLI) application written in Go. This application allows you to ingest financial data and store it in a PostgreSQL database.
