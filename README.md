@@ -28,7 +28,7 @@ Here is a simple guide on how to set up a PostgreSQL database:
 2. Once installed, create a new database which will be used by the application. This can be done by using the PostgreSQL command line interface (psql) or a graphical interface such as PgAdmin.
 3. Ensure that you have the following database details:
    * Database Host (e.g., localhost if running on your machine)
-   * Database Port (typically 5432 for PostgreSQL)
+   * Database Port (typically 5432)
    * Database User
    * Database Password
    * Database Name
