@@ -21,6 +21,19 @@ Before you begin, ensure you have met the following requirements:
 
 **Important**: This application requires a PostgreSQL database to function correctly. The application will prompt you for your database credentials to generate a configuration file. If you don't have PostgreSQL installed, you can download it from the official website: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
 
+## PostgreSQL Setup
+
+Here is a simple guide on how to set up a PostgreSQL database:
+1. Install PostgreSQL from
+2. Once installed, create a new database which will be used by the application. This can be done by using the PostgreSQL command line interface (psql) or a graphical interface such as PgAdmin.
+3. Ensure that you have the following database details:
+* Database Host (e.g., localhost if running on your machine)
+* Database Port (typically 5432 for PostgreSQL)
+* Database User
+* Database Password
+* Database Name
+* SSL Mode (Set to 'disable' for local setup)
+
 ## How to Install the Application
 
 1. Go to the repository page on GitHub: [https://github.com/Bontl3/fin-data-ingestor](https://github.com/Bontl3/fin-data-ingestor)
